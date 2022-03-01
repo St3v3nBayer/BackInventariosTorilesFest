@@ -1,0 +1,27 @@
+
+/************ INSERTAR EN INVENTARIOS CON STOCK (0) CUANDO SE CREA UN PRODUCTO********/
+DELIMITER //
+CREATE TRIGGER Insert_product_en_Inventarios AFTER INSERT ON producto
+FOR EACH ROW BEGIN
+INSERT INTO inventario (id_producto_inventario) VALUE (NEW.idproducto);
+END//
+
+/*************** CUANDO INGRESE UN PRODUCTO EN MOVIMIENTOS, SUMAR CANT EN INVENTARIOS********/
+DELIMITER //
+CREATE TRIGGER IngresarProductosInventario AFTER INSERT ON movimientos
+FOR EACH ROW BEGIN
+UPDATE inventario SET cant_inventario = cant_inventario+NEW.cant WHERE NEW.id_producto_movimiento=id_producto_inventario;
+END//
+
+/*************** CUANDO INGRESE UN PRODUCTO EN MOVIMIENTOS, SUMAR Y RESTAR CANT EN INVENTARIOS********/
+DELIMITER //
+CREATE TRIGGER IngresarProductosInventario AFTER INSERT ON movimientos
+FOR EACH ROW BEGIN
+IF NEW.id_tipo_movimiento=1 THEN
+UPDATE inventario SET cant_inventario = cant_inventario+NEW.cant WHERE NEW.id_producto_movimiento=id_producto_inventario;
+ELSE 
+UPDATE inventario SET cant_inventario = cant_inventario-NEW.cant WHERE NEW.id_producto_movimiento=id_producto_inventario;
+END IF;
+END//
+
+
